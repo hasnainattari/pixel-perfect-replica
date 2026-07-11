@@ -48,14 +48,17 @@ function AssetDetail() {
 
   useEffect(() => {
     if (role !== "admin") return;
-    supabase.from("user_roles").select("user_id, profiles!inner(id, full_name, email)").eq("role","technician").then(({ data }) => {
-      const list = (data ?? []).map((r: { profiles: Tech }) => r.profiles).filter(Boolean);
-      setTechs(list);
-    });
+    (async () => {
+      const { data: r } = await supabase.from("user_roles").select("user_id").eq("role", "technician");
+      const ids = (r ?? []).map((x) => x.user_id);
+      if (ids.length === 0) return setTechs([]);
+      const { data: p } = await supabase.from("profiles").select("id,full_name,email").in("id", ids);
+      setTechs((p as Tech[]) ?? []);
+    })();
   }, [role]);
 
   async function updateStatus(s: string) {
-    const { error } = await supabase.from("assets").update({ status: s }).eq("id", id);
+    const { error } = await supabase.from("assets").update({ status: s as Asset["status"] }).eq("id", id);
     if (error) return toast.error(error.message);
     toast.success("Status updated");
     load();

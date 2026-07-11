@@ -65,9 +65,13 @@ function IssueDetail() {
 
   useEffect(() => {
     if (role !== "admin") return;
-    supabase.from("user_roles").select("user_id, profiles!inner(id, full_name, email)").eq("role", "technician").then(({ data }) => {
-      setTechs((data ?? []).map((r: { profiles: { id: string; full_name: string | null; email: string | null } }) => r.profiles).filter(Boolean));
-    });
+    (async () => {
+      const { data: r } = await supabase.from("user_roles").select("user_id").eq("role", "technician");
+      const ids = (r ?? []).map((x) => x.user_id);
+      if (ids.length === 0) return setTechs([]);
+      const { data: p } = await supabase.from("profiles").select("id,full_name,email").in("id", ids);
+      setTechs((p as { id: string; full_name: string | null; email: string | null }[]) ?? []);
+    })();
   }, [role]);
 
   async function changeStatus(next: string) {
@@ -78,7 +82,7 @@ function IssueDetail() {
     if (next === "resolved" && maintenanceCount === 0) {
       return toast.error("Add at least one maintenance record before resolving.");
     }
-    const { error } = await supabase.from("issues").update({ status: next }).eq("id", id);
+    const { error } = await supabase.from("issues").update({ status: next as Issue["status"] }).eq("id", id);
     if (error) return toast.error(error.message);
     toast.success(`Status → ${next.replaceAll("_", " ")}`);
     load();
@@ -86,7 +90,7 @@ function IssueDetail() {
 
   async function assign(techId: string) {
     const val = techId === "none" ? null : techId;
-    const patch: Record<string, unknown> = { assigned_technician_id: val };
+    const patch: { assigned_technician_id: string | null; status?: Issue["status"] } = { assigned_technician_id: val };
     if (val && issue?.status === "reported") patch.status = "assigned";
     const { error } = await supabase.from("issues").update(patch).eq("id", id);
     if (error) return toast.error(error.message);
