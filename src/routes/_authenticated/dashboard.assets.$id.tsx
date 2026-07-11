@@ -58,7 +58,7 @@ function AssetDetail() {
   }, [role]);
 
   async function updateStatus(s: string) {
-    const { error } = await supabase.from("assets").update({ status: s as Asset["status"] }).eq("id", id);
+    const { error } = await supabase.from("assets").update({ status: s as never }).eq("id", id);
     if (error) return toast.error(error.message);
     toast.success("Status updated");
     load();

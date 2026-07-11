@@ -82,7 +82,7 @@ function IssueDetail() {
     if (next === "resolved" && maintenanceCount === 0) {
       return toast.error("Add at least one maintenance record before resolving.");
     }
-    const { error } = await supabase.from("issues").update({ status: next as Issue["status"] }).eq("id", id);
+    const { error } = await supabase.from("issues").update({ status: next as never }).eq("id", id);
     if (error) return toast.error(error.message);
     toast.success(`Status → ${next.replaceAll("_", " ")}`);
     load();
@@ -90,7 +90,7 @@ function IssueDetail() {
 
   async function assign(techId: string) {
     const val = techId === "none" ? null : techId;
-    const patch: { assigned_technician_id: string | null; status?: Issue["status"] } = { assigned_technician_id: val };
+    const patch: { assigned_technician_id: string | null; status?: never } = { assigned_technician_id: val };
     if (val && issue?.status === "reported") patch.status = "assigned";
     const { error } = await supabase.from("issues").update(patch).eq("id", id);
     if (error) return toast.error(error.message);
