@@ -9,38 +9,179 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as IssueStatusIssueNumberRouteImport } from './routes/issue-status.$issueNumber'
+import { Route as AssetAssetCodeRouteImport } from './routes/asset.$assetCode'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AssetAssetCodeReportRouteImport } from './routes/asset.$assetCode.report'
+import { Route as AuthenticatedDashboardTechnicianRouteImport } from './routes/_authenticated/dashboard.technician'
+import { Route as AuthenticatedDashboardIssuesIdRouteImport } from './routes/_authenticated/dashboard.issues.$id'
+import { Route as AuthenticatedDashboardAssetsNewRouteImport } from './routes/_authenticated/dashboard.assets.new'
+import { Route as AuthenticatedDashboardAssetsIdRouteImport } from './routes/_authenticated/dashboard.assets.$id'
 
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const IssueStatusIssueNumberRoute = IssueStatusIssueNumberRouteImport.update({
+  id: '/issue-status/$issueNumber',
+  path: '/issue-status/$issueNumber',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AssetAssetCodeRoute = AssetAssetCodeRouteImport.update({
+  id: '/asset/$assetCode',
+  path: '/asset/$assetCode',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AssetAssetCodeReportRoute = AssetAssetCodeReportRouteImport.update({
+  id: '/report',
+  path: '/report',
+  getParentRoute: () => AssetAssetCodeRoute,
+} as any)
+const AuthenticatedDashboardTechnicianRoute =
+  AuthenticatedDashboardTechnicianRouteImport.update({
+    id: '/technician',
+    path: '/technician',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardIssuesIdRoute =
+  AuthenticatedDashboardIssuesIdRouteImport.update({
+    id: '/issues/$id',
+    path: '/issues/$id',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardAssetsNewRoute =
+  AuthenticatedDashboardAssetsNewRouteImport.update({
+    id: '/assets/new',
+    path: '/assets/new',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardAssetsIdRoute =
+  AuthenticatedDashboardAssetsIdRouteImport.update({
+    id: '/assets/$id',
+    path: '/assets/$id',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
+  '/asset/$assetCode': typeof AssetAssetCodeRouteWithChildren
+  '/issue-status/$issueNumber': typeof IssueStatusIssueNumberRoute
+  '/dashboard/technician': typeof AuthenticatedDashboardTechnicianRoute
+  '/asset/$assetCode/report': typeof AssetAssetCodeReportRoute
+  '/dashboard/assets/$id': typeof AuthenticatedDashboardAssetsIdRoute
+  '/dashboard/assets/new': typeof AuthenticatedDashboardAssetsNewRoute
+  '/dashboard/issues/$id': typeof AuthenticatedDashboardIssuesIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
+  '/asset/$assetCode': typeof AssetAssetCodeRouteWithChildren
+  '/issue-status/$issueNumber': typeof IssueStatusIssueNumberRoute
+  '/dashboard/technician': typeof AuthenticatedDashboardTechnicianRoute
+  '/asset/$assetCode/report': typeof AssetAssetCodeReportRoute
+  '/dashboard/assets/$id': typeof AuthenticatedDashboardAssetsIdRoute
+  '/dashboard/assets/new': typeof AuthenticatedDashboardAssetsNewRoute
+  '/dashboard/issues/$id': typeof AuthenticatedDashboardIssuesIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteWithChildren
+  '/asset/$assetCode': typeof AssetAssetCodeRouteWithChildren
+  '/issue-status/$issueNumber': typeof IssueStatusIssueNumberRoute
+  '/_authenticated/dashboard/technician': typeof AuthenticatedDashboardTechnicianRoute
+  '/asset/$assetCode/report': typeof AssetAssetCodeReportRoute
+  '/_authenticated/dashboard/assets/$id': typeof AuthenticatedDashboardAssetsIdRoute
+  '/_authenticated/dashboard/assets/new': typeof AuthenticatedDashboardAssetsNewRoute
+  '/_authenticated/dashboard/issues/$id': typeof AuthenticatedDashboardIssuesIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/dashboard'
+    | '/asset/$assetCode'
+    | '/issue-status/$issueNumber'
+    | '/dashboard/technician'
+    | '/asset/$assetCode/report'
+    | '/dashboard/assets/$id'
+    | '/dashboard/assets/new'
+    | '/dashboard/issues/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/dashboard'
+    | '/asset/$assetCode'
+    | '/issue-status/$issueNumber'
+    | '/dashboard/technician'
+    | '/asset/$assetCode/report'
+    | '/dashboard/assets/$id'
+    | '/dashboard/assets/new'
+    | '/dashboard/issues/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/_authenticated/dashboard'
+    | '/asset/$assetCode'
+    | '/issue-status/$issueNumber'
+    | '/_authenticated/dashboard/technician'
+    | '/asset/$assetCode/report'
+    | '/_authenticated/dashboard/assets/$id'
+    | '/_authenticated/dashboard/assets/new'
+    | '/_authenticated/dashboard/issues/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
+  AssetAssetCodeRoute: typeof AssetAssetCodeRouteWithChildren
+  IssueStatusIssueNumberRoute: typeof IssueStatusIssueNumberRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +189,115 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/issue-status/$issueNumber': {
+      id: '/issue-status/$issueNumber'
+      path: '/issue-status/$issueNumber'
+      fullPath: '/issue-status/$issueNumber'
+      preLoaderRoute: typeof IssueStatusIssueNumberRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/asset/$assetCode': {
+      id: '/asset/$assetCode'
+      path: '/asset/$assetCode'
+      fullPath: '/asset/$assetCode'
+      preLoaderRoute: typeof AssetAssetCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/asset/$assetCode/report': {
+      id: '/asset/$assetCode/report'
+      path: '/report'
+      fullPath: '/asset/$assetCode/report'
+      preLoaderRoute: typeof AssetAssetCodeReportRouteImport
+      parentRoute: typeof AssetAssetCodeRoute
+    }
+    '/_authenticated/dashboard/technician': {
+      id: '/_authenticated/dashboard/technician'
+      path: '/technician'
+      fullPath: '/dashboard/technician'
+      preLoaderRoute: typeof AuthenticatedDashboardTechnicianRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/issues/$id': {
+      id: '/_authenticated/dashboard/issues/$id'
+      path: '/issues/$id'
+      fullPath: '/dashboard/issues/$id'
+      preLoaderRoute: typeof AuthenticatedDashboardIssuesIdRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/assets/new': {
+      id: '/_authenticated/dashboard/assets/new'
+      path: '/assets/new'
+      fullPath: '/dashboard/assets/new'
+      preLoaderRoute: typeof AuthenticatedDashboardAssetsNewRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/assets/$id': {
+      id: '/_authenticated/dashboard/assets/$id'
+      path: '/assets/$id'
+      fullPath: '/dashboard/assets/$id'
+      preLoaderRoute: typeof AuthenticatedDashboardAssetsIdRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
   }
 }
 
+interface AuthenticatedDashboardRouteChildren {
+  AuthenticatedDashboardTechnicianRoute: typeof AuthenticatedDashboardTechnicianRoute
+  AuthenticatedDashboardAssetsIdRoute: typeof AuthenticatedDashboardAssetsIdRoute
+  AuthenticatedDashboardAssetsNewRoute: typeof AuthenticatedDashboardAssetsNewRoute
+  AuthenticatedDashboardIssuesIdRoute: typeof AuthenticatedDashboardIssuesIdRoute
+}
+
+const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
+  {
+    AuthenticatedDashboardTechnicianRoute:
+      AuthenticatedDashboardTechnicianRoute,
+    AuthenticatedDashboardAssetsIdRoute: AuthenticatedDashboardAssetsIdRoute,
+    AuthenticatedDashboardAssetsNewRoute: AuthenticatedDashboardAssetsNewRoute,
+    AuthenticatedDashboardIssuesIdRoute: AuthenticatedDashboardIssuesIdRoute,
+  }
+
+const AuthenticatedDashboardRouteWithChildren =
+  AuthenticatedDashboardRoute._addFileChildren(
+    AuthenticatedDashboardRouteChildren,
+  )
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRouteWithChildren
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRouteWithChildren,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
+interface AssetAssetCodeRouteChildren {
+  AssetAssetCodeReportRoute: typeof AssetAssetCodeReportRoute
+}
+
+const AssetAssetCodeRouteChildren: AssetAssetCodeRouteChildren = {
+  AssetAssetCodeReportRoute: AssetAssetCodeReportRoute,
+}
+
+const AssetAssetCodeRouteWithChildren = AssetAssetCodeRoute._addFileChildren(
+  AssetAssetCodeRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
+  AssetAssetCodeRoute: AssetAssetCodeRouteWithChildren,
+  IssueStatusIssueNumberRoute: IssueStatusIssueNumberRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
