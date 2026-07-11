@@ -35,7 +35,7 @@ function PublicAsset() {
       setAsset(data as PubAsset);
       const { data: h } = await supabase.from("asset_history")
         .select("id,action,created_at")
-        .eq("asset_id", data.id)
+        .eq("asset_id", data.id as string)
         .order("created_at", { ascending: false })
         .limit(10);
       setHistory(h ?? []);

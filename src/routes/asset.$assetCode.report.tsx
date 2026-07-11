@@ -48,7 +48,7 @@ function ReportPage() {
 
   useEffect(() => {
     supabase.from("public_assets").select("id,name,category,location,condition,status").eq("asset_code", assetCode).maybeSingle().then(({ data }) => {
-      setAsset(data);
+      setAsset(data as never);
     });
   }, [assetCode]);
 
