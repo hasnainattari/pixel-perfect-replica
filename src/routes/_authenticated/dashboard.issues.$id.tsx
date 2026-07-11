@@ -90,9 +90,9 @@ function IssueDetail() {
 
   async function assign(techId: string) {
     const val = techId === "none" ? null : techId;
-    const patch: { assigned_technician_id: string | null; status?: never } = { assigned_technician_id: val };
+    const patch: Record<string, unknown> = { assigned_technician_id: val };
     if (val && issue?.status === "reported") patch.status = "assigned";
-    const { error } = await supabase.from("issues").update(patch).eq("id", id);
+    const { error } = await supabase.from("issues").update(patch as never).eq("id", id);
     if (error) return toast.error(error.message);
     toast.success("Technician assigned");
     load();
