@@ -161,6 +161,15 @@ function AuthPage() {
             <Button type="submit" disabled={loading} className="w-full">
               {loading ? "Please wait…" : mode === "signup" ? "Create account" : "Sign in"}
             </Button>
+            {mode === "signin" && (
+              <button
+                type="button"
+                onClick={onForgotPassword}
+                className="w-full text-center text-xs text-muted-foreground underline-offset-2 hover:underline"
+              >
+                Forgot password?
+              </button>
+            )}
           </form>
         </div>
       </div>
