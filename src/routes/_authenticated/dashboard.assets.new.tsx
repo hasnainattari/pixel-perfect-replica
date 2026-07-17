@@ -1,11 +1,12 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { fetchCurrentRole, type AppRole } from "@/lib/roles";
 
 export const Route = createFileRoute("/_authenticated/dashboard/assets/new")({
   head: () => ({ meta: [{ title: "New asset · MaintainIQ" }] }),
@@ -14,6 +15,9 @@ export const Route = createFileRoute("/_authenticated/dashboard/assets/new")({
 
 function NewAsset() {
   const navigate = useNavigate();
+  const [role, setRole] = useState<AppRole | null>(null);
+  useEffect(() => { fetchCurrentRole().then(setRole); }, []);
+
   const [form, setForm] = useState({
     asset_code: "",
     name: "",
@@ -45,11 +49,28 @@ function NewAsset() {
     }).select("id").single();
     setLoading(false);
     if (error) {
-      toast.error(error.code === "23505" ? "That asset code already exists" : error.message);
+      if (error.code === "23505") toast.error("That asset code already exists");
+      else if (error.code === "42501" || /row-level security|permission/i.test(error.message))
+        toast.error("Only admins can create assets. Ask an admin to create it, or sign in as an admin.");
+      else toast.error(error.message);
       return;
     }
     toast.success("Asset created");
     navigate({ to: "/dashboard/assets/$id", params: { id: data.id } });
+  }
+
+  if (role && role !== "admin") {
+    return (
+      <div className="mx-auto max-w-2xl rounded-2xl border bg-card p-8 text-center shadow-soft">
+        <h1 className="text-2xl font-bold">Admin access required</h1>
+        <p className="mt-2 text-muted-foreground">
+          Only admins can register new assets. You're signed in as a technician.
+        </p>
+        <Button className="mt-6" onClick={() => navigate({ to: "/dashboard/technician" })}>
+          Back to my tasks
+        </Button>
+      </div>
+    );
   }
 
   return (
