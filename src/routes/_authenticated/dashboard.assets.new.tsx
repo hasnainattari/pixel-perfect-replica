@@ -49,11 +49,28 @@ function NewAsset() {
     }).select("id").single();
     setLoading(false);
     if (error) {
-      toast.error(error.code === "23505" ? "That asset code already exists" : error.message);
+      if (error.code === "23505") toast.error("That asset code already exists");
+      else if (error.code === "42501" || /row-level security|permission/i.test(error.message))
+        toast.error("Only admins can create assets. Ask an admin to create it, or sign in as an admin.");
+      else toast.error(error.message);
       return;
     }
     toast.success("Asset created");
     navigate({ to: "/dashboard/assets/$id", params: { id: data.id } });
+  }
+
+  if (role && role !== "admin") {
+    return (
+      <div className="mx-auto max-w-2xl rounded-2xl border bg-card p-8 text-center shadow-soft">
+        <h1 className="text-2xl font-bold">Admin access required</h1>
+        <p className="mt-2 text-muted-foreground">
+          Only admins can register new assets. You're signed in as a technician.
+        </p>
+        <Button className="mt-6" onClick={() => navigate({ to: "/dashboard/technician" })}>
+          Back to my tasks
+        </Button>
+      </div>
+    );
   }
 
   return (
