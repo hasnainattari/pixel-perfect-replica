@@ -74,14 +74,30 @@ function AuthPage() {
       navigate({ to: r === "admin" ? "/dashboard" : "/dashboard/technician", replace: true });
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Auth failed";
-      toast.error(
-        /pwned|weak/i.test(msg)
-          ? "That password appears in known data breaches. Please choose a stronger one."
-          : msg,
-      );
+      let friendly = msg;
+      if (/invalid login credentials/i.test(msg)) {
+        friendly = "Email or password is incorrect. Use 'Forgot password?' below if needed.";
+      } else if (/pwned|weak/i.test(msg)) {
+        friendly = "That password appears in known data breaches. Please choose a stronger one.";
+      } else if (/user already registered/i.test(msg)) {
+        friendly = "An account with this email already exists — please sign in instead.";
+      }
+      toast.error(friendly);
     } finally {
       setLoading(false);
     }
+  }
+
+  async function onForgotPassword() {
+    if (!email) {
+      toast.error("Enter your email above, then click 'Forgot password?'");
+      return;
+    }
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    if (error) toast.error(error.message);
+    else toast.success("Password reset email sent — check your inbox.");
   }
 
   return (
@@ -145,6 +161,15 @@ function AuthPage() {
             <Button type="submit" disabled={loading} className="w-full">
               {loading ? "Please wait…" : mode === "signup" ? "Create account" : "Sign in"}
             </Button>
+            {mode === "signin" && (
+              <button
+                type="button"
+                onClick={onForgotPassword}
+                className="w-full text-center text-xs text-muted-foreground underline-offset-2 hover:underline"
+              >
+                Forgot password?
+              </button>
+            )}
           </form>
         </div>
       </div>
