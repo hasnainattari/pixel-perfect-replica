@@ -41,7 +41,7 @@ function AuthPage() {
     setLoading(true);
     try {
       if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -50,16 +50,35 @@ function AuthPage() {
           },
         });
         if (error) throw error;
-        toast.success("Account created — signing you in…");
+        // If email confirmation is required, no session is returned — sign in explicitly.
+        if (!data.session) {
+          const { error: signInErr } = await supabase.auth.signInWithPassword({ email, password });
+          if (signInErr) {
+            toast.success("Account created. Please check your email to confirm, then sign in.");
+            setMode("signin");
+            return;
+          }
+        }
+        toast.success("Account created — welcome!");
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
       }
       router.invalidate();
-      const r = await fetchCurrentRole();
+      // Give the trigger a beat to insert the user_roles row on first signup.
+      let r = await fetchCurrentRole();
+      if (!r) {
+        await new Promise((res) => setTimeout(res, 400));
+        r = await fetchCurrentRole();
+      }
       navigate({ to: r === "admin" ? "/dashboard" : "/dashboard/technician", replace: true });
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Auth failed");
+      const msg = err instanceof Error ? err.message : "Auth failed";
+      toast.error(
+        /pwned|weak/i.test(msg)
+          ? "That password appears in known data breaches. Please choose a stronger one."
+          : msg,
+      );
     } finally {
       setLoading(false);
     }
