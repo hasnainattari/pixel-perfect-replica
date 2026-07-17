@@ -1,11 +1,12 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { fetchCurrentRole, type AppRole } from "@/lib/roles";
 
 export const Route = createFileRoute("/_authenticated/dashboard/assets/new")({
   head: () => ({ meta: [{ title: "New asset · MaintainIQ" }] }),
@@ -14,6 +15,9 @@ export const Route = createFileRoute("/_authenticated/dashboard/assets/new")({
 
 function NewAsset() {
   const navigate = useNavigate();
+  const [role, setRole] = useState<AppRole | null>(null);
+  useEffect(() => { fetchCurrentRole().then(setRole); }, []);
+
   const [form, setForm] = useState({
     asset_code: "",
     name: "",
